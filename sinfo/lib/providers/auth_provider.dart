@@ -87,7 +87,42 @@ class AuthNotifier extends StateNotifier<AuthState> {
     await prefs.setString('phone', phone);
     if (numberPlate != null) await prefs.setString('numberPlate', numberPlate);
     if (autoName != null) await prefs.setString('autoName', autoName);
-    if (profileImageUrl != null) await prefs.setString('profileImageUrl', profileImageUrl);
+    if (profileImageUrl != null) {
+      await prefs.setString('profileImageUrl', profileImageUrl);
+    }
+
+    // 1. Sign in anonymously to Supabase to get a JWT session
+    try {
+      final authResponse = await Supabase.instance.client.auth.signInAnonymously();
+      if (authResponse.session != null) {
+        // 2. If driver, register in the drivers table
+        if (role == 'driver') {
+          await Supabase.instance.client.from('drivers').upsert({
+            'id': authResponse.user!.id,
+            'name': name,
+            'phone': phone,
+            'number_plate': numberPlate,
+            'auto_name': autoName,
+            'profile_url': profileImageUrl,
+            'location': 'POINT(75.7804 11.2588)', // Default to demo location for now
+            'verified': true,
+            'available': true,
+          });
+        }
+        // Also could save user metadata if needed
+        await Supabase.instance.client.auth.updateUser(
+          UserAttributes(
+            data: {
+              'display_name': name,
+              'phone': phone,
+              'role': role,
+            },
+          ),
+        );
+      }
+    } catch (e) {
+      print('Supabase registration error: $e');
+    }
 
     state = AuthState(
       isLoggedIn: true,

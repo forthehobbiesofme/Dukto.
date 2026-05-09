@@ -78,7 +78,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     title: Text(notifier.translate('My Details'), style: GoogleFonts.montserrat()),
                     onTap: () {
                       Navigator.pop(context);
-                      // Show details view if needed
+                      _showUserDetails(context, ref, notifier);
                     },
                   ),
                   ListTile(
@@ -97,6 +97,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             );
           },
+        );
+      },
+    );
+  }
+
+  void _showUserDetails(BuildContext context, WidgetRef ref, SettingsNotifier notifier) {
+    final auth = ref.read(authProvider);
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(notifier.translate('My Details'), style: GoogleFonts.montserrat()),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Name: ${auth.name}', style: GoogleFonts.montserrat()),
+              const SizedBox(height: 8),
+              Text('Phone: ${auth.phone}', style: GoogleFonts.montserrat()),
+              if (auth.numberPlate != null) ...[
+                const SizedBox(height: 8),
+                Text('KL Number: ${auth.numberPlate}', style: GoogleFonts.montserrat()),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(notifier.translate('Close'), style: GoogleFonts.montserrat()),
+            ),
+          ],
         );
       },
     );
@@ -169,17 +200,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final notifier = ref.read(settingsProvider.notifier);
+    final auth = ref.watch(authProvider);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFE5E5E5), // Light grey top bar matching design
+        backgroundColor: const Color(0xFFE5E5E5),
         elevation: 0,
+        toolbarHeight: 70,
+        leadingWidth: 70,
         leading: Padding(
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.only(left: 20.0),
           child: Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFFBDBDBD), // Placeholder grey
+            decoration: BoxDecoration(
+              color: const Color(0xFFBDBDBD),
               shape: BoxShape.circle,
+              image: auth.profileImageUrl != null
+                  ? DecorationImage(
+                      image: NetworkImage(auth.profileImageUrl!),
+                      fit: BoxFit.cover,
+                    )
+                  : null,
             ),
           ),
         ),
@@ -200,9 +241,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           IconButton(
             icon: Image.asset(
               'Icons and assets/icons8-search-50.png',
-              width: 26,
-              height: 26,
-              color: Colors.black, // Dark grey/black matching design
+              width: 28,
+              height: 28,
+              color: Colors.black,
             ),
             onPressed: () {
               setState(() {
@@ -220,13 +261,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           IconButton(
             icon: Image.asset(
               'Icons and assets/icons8-settings-48.png',
-              width: 26,
-              height: 26,
+              width: 28,
+              height: 28,
               color: Colors.black,
             ),
             onPressed: () => _showSettings(context, ref),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 20),
         ],
       ),
       body: SafeArea(
@@ -234,21 +275,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           children: [
             if (_hasRequested || _searchQuery.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
                 child: Row(
                   children: [
                     Text(
-                      _searchQuery.isNotEmpty 
+                      _searchQuery.isNotEmpty
                           ? 'Search results for "$_searchQuery"'
                           : notifier.translate('showing nearby result'),
                       style: GoogleFonts.montserrat(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black,
                       ),
                     ),
-                    const SizedBox(width: 4),
-                    Image.asset('Icons and assets/icons8-down-arrow-50.png', width: 14, height: 14, color: Colors.black87),
+                    const SizedBox(width: 6),
+                    Image.asset(
+                      'Icons and assets/icons8-down-arrow-50.png',
+                      width: 16,
+                      height: 16,
+                      color: Colors.black,
+                    ),
                   ],
                 ),
               ),
