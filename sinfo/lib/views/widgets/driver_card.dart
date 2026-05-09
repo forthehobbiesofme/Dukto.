@@ -88,14 +88,14 @@ class DriverCard extends ConsumerWidget {
         return StatefulBuilder(
           builder: (dialogCtx, setState) {
             return Dialog(
-              insetPadding: const EdgeInsets.symmetric(horizontal: 32),
+              insetPadding: const EdgeInsets.symmetric(horizontal: 24),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-                side: const BorderSide(color: colorOutline, width: 2.5),
+                borderRadius: BorderRadius.circular(30),
+                side: const BorderSide(color: Color(0xFFEAA297), width: 3),
               ),
-              backgroundColor: colorPaleOrange,
+              backgroundColor: const Color(0xFFFFD1B2),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
+                padding: const EdgeInsets.fromLTRB(20, 30, 20, 30),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -107,41 +107,42 @@ class DriverCard extends ConsumerWidget {
                         return GestureDetector(
                           onTap: () => setState(() => selectedStars = index + 1),
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 6),
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
                             child: Icon(
                               filled ? Icons.star : Icons.star_border_rounded,
-                              size: 40,
-                              color: Colors.black87,
+                              size: 44,
+                              color: Colors.black,
                             ),
                           ),
                         );
                       }),
                     ),
 
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 16),
 
                     // ── Prompt Text ──
                     Text(
                       notifier.translate('Rate your experience.....'),
                       style: GoogleFonts.montserrat(
-                        fontSize: 16,
+                        fontSize: 18,
                         fontWeight: FontWeight.w400,
-                        color: Colors.black87,
+                        color: Colors.black,
                       ),
                     ),
 
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 20),
 
                     // ── Input + Done Button Row ──
                     Row(
                       children: [
                         // Grey pill input
                         Expanded(
+                          flex: 3,
                           child: Container(
-                            height: 44,
+                            height: 48,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFD9D9D9),
-                              borderRadius: BorderRadius.circular(22),
+                              color: const Color(0xFFBDBDBD),
+                              borderRadius: BorderRadius.circular(24),
                               border: Border.all(
                                 color: Colors.black54,
                                 width: 1,
@@ -151,17 +152,17 @@ class DriverCard extends ConsumerWidget {
                               controller: commentController,
                               style: GoogleFonts.montserrat(
                                 color: Colors.black,
-                                fontSize: 14,
+                                fontSize: 16,
                               ),
                               decoration: InputDecoration(
                                 hintText: notifier.translate('type something..'),
                                 hintStyle: GoogleFonts.montserrat(
                                   color: Colors.black54,
-                                  fontSize: 14,
+                                  fontSize: 16,
                                 ),
                                 border: InputBorder.none,
                                 contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 18,
+                                  horizontal: 20,
                                   vertical: 12,
                                 ),
                                 isDense: true,
@@ -169,45 +170,49 @@ class DriverCard extends ConsumerWidget {
                             ),
                           ),
                         ),
-                                 const SizedBox(width: 10),
+                        const SizedBox(width: 12),
 
                         // Actions
                         if (isUpdate)
-                          GestureDetector(
-                            onTap: () async {
-                              Navigator.pop(dialogCtx);
-                              try {
-                                await ref.read(supabaseServiceProvider).deleteRating(
-                                      driver.id,
-                                      userPhone,
+                          Expanded(
+                            flex: 1,
+                            child: GestureDetector(
+                              onTap: () async {
+                                Navigator.pop(dialogCtx);
+                                try {
+                                  await ref.read(supabaseServiceProvider).deleteRating(
+                                        driver.id,
+                                        userPhone,
+                                      );
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Rating deleted!')),
                                     );
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Rating deleted!')),
-                                  );
+                                  }
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+                                    );
+                                  }
                                 }
-                              } catch (e) {
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
-                                  );
-                                }
-                              }
-                            },
-                            child: Container(
-                              height: 44,
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                              decoration: BoxDecoration(
-                                color: Colors.red.shade400,
-                                borderRadius: BorderRadius.circular(22),
-                                border: Border.all(color: Colors.black54, width: 1),
+                              },
+                              child: Container(
+                                height: 48,
+                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.shade400,
+                                  borderRadius: BorderRadius.circular(24),
+                                  border: Border.all(color: Colors.black, width: 1),
+                                ),
+                                alignment: Alignment.center,
+                                child: const Icon(Icons.delete, color: Colors.white, size: 24),
                               ),
-                              alignment: Alignment.center,
-                              child: const Icon(Icons.delete, color: Colors.white, size: 22),
                             ),
                           ),
                         if (isUpdate) const SizedBox(width: 10),
                         Expanded(
+                          flex: 2,
                           child: GestureDetector(
                             onTap: () async {
                               if (selectedStars == 0) {
@@ -259,12 +264,12 @@ class DriverCard extends ConsumerWidget {
                               }
                             },
                             child: Container(
-                              height: 44,
+                              height: 48,
                               decoration: BoxDecoration(
-                                color: colorOrange,
-                                borderRadius: BorderRadius.circular(22),
+                                color: const Color(0xFFE89E5B),
+                                borderRadius: BorderRadius.circular(24),
                                 border: Border.all(
-                                  color: Colors.black54,
+                                  color: Colors.black,
                                   width: 1,
                                 ),
                               ),
@@ -273,8 +278,8 @@ class DriverCard extends ConsumerWidget {
                                 isUpdate ? 'Update' : notifier.translate('Done'),
                                 style: GoogleFonts.montserrat(
                                   color: Colors.black,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
                                 ),
                               ),
                             ),
@@ -297,19 +302,19 @@ class DriverCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       decoration: BoxDecoration(
-        color: colorPaleOrange,
-        borderRadius: BorderRadius.circular(24),
+        color: const Color(0xFFFFD1B2),
+        borderRadius: BorderRadius.circular(40),
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // ── Orange Profile Circle ──
           Container(
-            width: 85,
-            height: 85,
+            width: 95,
+            height: 95,
             decoration: BoxDecoration(
-              color: colorOrange,
+              color: const Color(0xFFE89E5B),
               shape: BoxShape.circle,
               image: driver.profileUrl != null
                   ? DecorationImage(
@@ -320,20 +325,22 @@ class DriverCard extends ConsumerWidget {
             ),
           ),
 
-          const SizedBox(width: 16),
+          const SizedBox(width: 20),
 
           // ── Right Column: Name → KL → Action Buttons ──
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 // Name
                 Text(
                   driver.name,
                   style: GoogleFonts.montserrat(
-                    fontSize: 24,
+                    fontSize: 26,
                     fontWeight: FontWeight.w400,
                     color: Colors.black,
+                    letterSpacing: 0.5,
                   ),
                 ),
 
@@ -347,39 +354,39 @@ class DriverCard extends ConsumerWidget {
                       width: 18,
                       height: 18,
                     ),
-                    const SizedBox(width: 5),
+                    const SizedBox(width: 6),
                     Text(
                       driver.numberPlate,
                       style: GoogleFonts.montserrat(
                         fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black.withValues(alpha: 0.7),
                       ),
                     ),
                   ],
                 ),
 
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
 
                 // Action buttons — spaced out under the name/KL area
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildActionButton(
                       iconPath: 'Icons and assets/icons8-whatsapp-logo-48.png',
-                      label: 'message', // Exact label from image
+                      label: 'message',
                       onTap: () => _launchWhatsApp(context),
                       iconSize: 36,
                     ),
                     _buildActionButton(
                       iconPath: 'Icons and assets/icons8-call-48.png',
-                      label: 'Call', // Exact label from image
+                      label: 'Call',
                       onTap: () => _launchCall(context),
                       iconSize: 32,
                     ),
                     _buildActionButton(
                       iconPath: 'Icons and assets/icons8-star-48.png',
-                      label: 'rate', // Exact label from image
+                      label: 'rate',
                       onTap: () => _showRatingDialog(context, ref),
                       iconSize: 32,
                     ),

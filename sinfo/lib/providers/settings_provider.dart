@@ -85,6 +85,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       'Are you sure you want to logout and delete your account?': 'ലോഗ്ഔട്ട് ചെയ്ത് അക്കൗണ്ട് ഇല്ലാതാക്കാൻ ഉറപ്പാണോ?',
       'Cancel': 'റദ്ദാക്കുക',
       'Confirm': 'ഉറപ്പാക്കുക',
+      'Close': 'അടയ്ക്കുക',
       'message': 'സന്ദേശം',
       'Call': 'വിളിക്കുക',
       'rate': 'റേറ്റ്',

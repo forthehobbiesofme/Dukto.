@@ -45,7 +45,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     // Check both local auth and Supabase JWT
     final hasSupabaseSession = Supabase.instance.client.auth.currentSession != null;
     
-    if (auth.isLoggedIn && hasSupabaseSession) {
+    if (auth.isLoggedIn || hasSupabaseSession) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomeScreen()),
